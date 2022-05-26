@@ -18,7 +18,7 @@ namespace BulkyBookWeb.Controllers
             return View(objCategoryList);
         }
 
-        // GET 
+            // GET 
         public IActionResult Create()
         {
             
@@ -30,9 +30,55 @@ namespace BulkyBookWeb.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Category obj)
         {
-            _db.Categories.Add(obj);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
+            if(obj.Name == obj.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("name", "The DisplayOrder cannot match the name");
+            }
+            if (ModelState.IsValid)
+            {
+                _db.Categories.Add(obj);
+                _db.SaveChanges(); 
+                return RedirectToAction("Index");
+            }
+
+            return View(obj);
+        }
+
+        // GET 
+        public IActionResult Edit(int? id)
+        { 
+            if(id == null || id == 0)
+            {
+                return NotFound();
+            }
+            var categoryFromDb = _db.Categories.Find(id);
+            // var categoryFromDBFirst = _db.Categories.FirstOrDefault(u => u.Id == id);
+            // var categoryFromDbSingle = _db.Categories.SingleOrDefault(u => u.Id == id);
+            if(categoryFromDb == null)
+            {
+                return NotFound();
+            }
+
+            return View(categoryFromDb);
+        }
+
+        // POST 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Category obj)
+        {
+            if (obj.Name == obj.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("name", "The DisplayOrder cannot match the name");
+            }
+            if (ModelState.IsValid)
+            {
+                _db.Categories.Add(obj);
+                _db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(obj);
         }
     }
 }
